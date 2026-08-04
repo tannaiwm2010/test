@@ -1,0 +1,45 @@
+name: devops-demo
+
+services:
+  # react-router-serve (Express) rendering the SSR app. Deliberately not
+  # published to the host — nginx is the only ingress, which is what makes the
+  # pipeline's health check meaningful.
+  app:
+    build:
+      context: .
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    # Hits / rather than a dedicated route because the app has none, and a full
+    # render is the thing actually worth proving. wget is busybox's, present in
+    # node:24-alpine.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    image: nginx:1.29-alpine
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    # Gates on app being healthy, so /health returning 200 through nginx proves
+    # the whole stack rather than just the proxy.
+    depends_on:
+      app:
+        condition: service_healthy
+    # Lets `compose up --wait` block on nginx actually serving, not merely on
+    # the container having started.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
