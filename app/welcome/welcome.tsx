@@ -9,7 +9,7 @@ export function Welcome() {
       <AnimatedGradientText
       speed={2}
       colorFrom="#00a6fb"
-      colorTo="#003459"
+      colorTo="#f94144"
       className="text-4xl font-semibold tracking-tight"
     >
       <h3 className="text-6xl">Arif Bhai</h3>
