@@ -8,8 +8,8 @@ export function Welcome() {
       <h1 className="text-3xl">hello!</h1>
       <AnimatedGradientText
       speed={2}
-      colorFrom="#4ade80"
-      colorTo="#06b6d4"
+      colorFrom="#00a6fb"
+      colorTo="#003459"
       className="text-4xl font-semibold tracking-tight"
     >
       <h3 className="text-6xl">Arif Bhai</h3>
