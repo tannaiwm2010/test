@@ -2,3 +2,14 @@
 build
 node_modules
 README.md
+
+# The Dockerfile does `COPY . /app` before `npm ci`, so anything left in the
+# build context invalidates that layer and forces a full reinstall. Excluding
+# files the image never needs keeps CI rebuilds warm.
+.git
+.gitignore
+.agents
+.vscode
+Jenkinsfile
+compose.yaml
+nginx
